@@ -1,9 +1,9 @@
 const express = require("express");
 const dotenv = require("dotenv");
-require("./src/config/connections_redis");
+const client = require("./src/config/connections_redis");
 const cors = require("cors");
 const db = require("./src/models");
-const createError = require("http-errors");
+const createHttpError = require("http-errors");
 
 // Import routes
 const authRoutes = require("./src/routes/authRoutes");
@@ -33,7 +33,7 @@ app.use("/api/students", studentRoutes);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
-  next(createError.NotFound("This is routes not found ^ - ^"));
+  next(createHttpError.NotFound("This is routes not found ^ - ^"));
 });
 app.use((err, req, res, next) => {
   res.json({
