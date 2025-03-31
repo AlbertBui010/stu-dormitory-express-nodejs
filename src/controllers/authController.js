@@ -65,7 +65,7 @@ const refresh = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const message = await authService.logout(req.user.id);
+    const { message } = await authService.logout(req.user.id);
     res.status(200).json({ message });
   } catch (error) {
     res.status(500).json({ error: error.message });
