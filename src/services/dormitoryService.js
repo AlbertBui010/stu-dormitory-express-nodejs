@@ -1,37 +1,65 @@
 const { Dormitory } = require("../models");
+const createHttpError = require("http-errors");
 
-class DormitoryService {
-  async getAll() {
-    try {
-      return await Dormitory.findAll();
-    } catch (error) {
-      throw new Error(`Failed to get dormitories: ${error.message}`);
-    }
+const getAll = async () => {
+  try {
+    return await Dormitory.findAll();
+  } catch (error) {
+    throw createHttpError(500, `Failed to get dormitories: ${error.message}`);
   }
+};
 
-  async getById(id) {
-    try {
-      const dormitory = await Dormitory.findByPk(id);
-      if (!dormitory) {
-        throw new Error("Dormitory not found");
-      }
-      return dormitory;
-    } catch (error) {
-      throw new Error(`Failed to get dormitory: ${error.message}`);
+const getById = async (id) => {
+  try {
+    const dormitory = await Dormitory.findByPk(id);
+    if (!dormitory) {
+      throw createHttpError(404, "Dormitory not found");
     }
+    return dormitory;
+  } catch (error) {
+    if (error.statusCode === 404) throw error;
+    throw createHttpError(500, `Failed to get dormitory: ${error.message}`);
   }
-  async create(data) {
+};
+
+const create = async (data) => {
+  try {
     return await Dormitory.create(data);
+  } catch (error) {
+    throw createHttpError(500, `Failed to create dormitory: ${error.message}`);
   }
+};
 
-  async update(id, data) {
-    await Dormitory.update(data, { where: { id } });
+const update = async (id, data) => {
+  try {
+    const [updated] = await Dormitory.update(data, { where: { id } });
+    if (updated === 0) {
+      throw createHttpError(404, "Dormitory not found");
+    }
     return await Dormitory.findByPk(id);
+  } catch (error) {
+    if (error.statusCode === 404) throw error;
+    throw createHttpError(500, `Failed to update dormitory: ${error.message}`);
   }
+};
 
-  async delete(id) {
-    return await Dormitory.destroy({ where: { id } });
+const deleteById = async (id) => {
+  try {
+    const deleted = await Dormitory.destroy({ where: { id } });
+    if (deleted === 0) {
+      throw createHttpError(404, "Dormitory not found");
+    }
+    return deleted;
+  } catch (error) {
+    if (error.statusCode === 404) throw error;
+    throw createHttpError(500, `Failed to delete dormitory: ${error.message}`);
   }
-}
+};
 
-module.exports = new DormitoryService();
+module.exports = {
+  getAll,
+  getById,
+  create,
+  update,
+  delete: deleteById,
+};

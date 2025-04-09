@@ -1,6 +1,6 @@
 const dormitoryService = require("../services/dormitoryService");
 
-exports.getAllDormitories = async (req, res) => {
+const getAllDormitories = async (req, res) => {
   try {
     const dormitories = await dormitoryService.getAll();
     console.log("======>", dormitories);
@@ -10,7 +10,7 @@ exports.getAllDormitories = async (req, res) => {
   }
 };
 
-exports.getDormitoryById = async (req, res) => {
+const getDormitoryById = async (req, res) => {
   try {
     const dormitory = await dormitoryService.getById(req.params.id);
     if (!dormitory)
@@ -21,7 +21,7 @@ exports.getDormitoryById = async (req, res) => {
   }
 };
 
-exports.createDormitory = async (req, res) => {
+const createDormitory = async (req, res) => {
   try {
     const dormitoryData = {
       ...req.body,
@@ -34,8 +34,15 @@ exports.createDormitory = async (req, res) => {
   }
 };
 
-exports.updateDormitory = async (req, res) => {
+const updateDormitory = async (req, res) => {
   try {
+    if (!req.params.id)
+      return res.status(400).json({ error: "Dormitory ID is required" });
+    if (!req.body || Object.keys(req.body).length === 0)
+      return res
+        .status(400)
+        .json({ error: "At least one field is required for update" });
+
     const dormitoryData = {
       ...req.body,
       updated_by: req.user.id,
@@ -50,11 +57,19 @@ exports.updateDormitory = async (req, res) => {
   }
 };
 
-exports.deleteDormitory = async (req, res) => {
+const deleteDormitory = async (req, res) => {
   try {
     await dormitoryService.delete(req.params.id);
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+module.exports = {
+  getAllDormitories,
+  getDormitoryById,
+  createDormitory,
+  updateDormitory,
+  deleteDormitory,
 };

@@ -11,7 +11,8 @@ const dormitoryRoutes = require("./src/routes/dormitoryRoutes");
 const roomRoutes = require("./src/routes/roomRoutes");
 const studentRoutes = require("./src/routes/studentRoutes");
 const roomAllocationRoutes = require("./src/routes/roomAllocationRoutes");
-// const paymentRoutes = require("./src/routes/paymentRoutes");
+const paymentRoutes = require("./src/routes/paymentRoutes");
+const maintenanceRoutes = require("./src/routes/maintenanceRoutes");
 dotenv.config();
 const app = express();
 
@@ -31,7 +32,8 @@ app.use("/api/dormitories", dormitoryRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/room-allocations", roomAllocationRoutes);
-// app.use("/api/payments", paymentRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {

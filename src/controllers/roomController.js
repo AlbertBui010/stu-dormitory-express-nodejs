@@ -1,6 +1,6 @@
 const roomService = require("../services/roomService");
 
-exports.getAllRooms = async (req, res) => {
+const getAllRooms = async (req, res) => {
   try {
     const rooms = await roomService.getAll();
     res.json(rooms);
@@ -9,7 +9,7 @@ exports.getAllRooms = async (req, res) => {
   }
 };
 
-exports.getRoomById = async (req, res) => {
+const getRoomById = async (req, res) => {
   try {
     const room = await roomService.getById(req.params.id);
     res.json(room);
@@ -22,7 +22,7 @@ exports.getRoomById = async (req, res) => {
   }
 };
 
-exports.createRoom = async (req, res) => {
+const createRoom = async (req, res) => {
   try {
     const roomData = {
       ...req.body,
@@ -39,7 +39,7 @@ exports.createRoom = async (req, res) => {
   }
 };
 
-exports.updateRoom = async (req, res) => {
+const updateRoom = async (req, res) => {
   try {
     const roomData = {
       ...req.body,
@@ -58,7 +58,7 @@ exports.updateRoom = async (req, res) => {
   }
 };
 
-exports.deleteRoom = async (req, res) => {
+const deleteRoom = async (req, res) => {
   try {
     await roomService.delete(req.params.id);
     res.status(204).send();
@@ -73,11 +73,20 @@ exports.deleteRoom = async (req, res) => {
   }
 };
 
-exports.getRoomsByDormitory = async (req, res) => {
+const getRoomsByDormitory = async (req, res) => {
   try {
     const rooms = await roomService.getRoomsByDormitory(req.params.dormitoryId);
     res.json(rooms);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+module.exports = {
+  getAllRooms,
+  getRoomById,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+  getRoomsByDormitory,
 };

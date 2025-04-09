@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
   SysFile.init(
     {
       id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
       },
       shareLink: {

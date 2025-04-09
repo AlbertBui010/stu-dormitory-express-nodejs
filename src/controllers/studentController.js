@@ -78,11 +78,33 @@ const login = async (req, res) => {
   }
 };
 
+const getStudentsByDormitory = async (req, res) => {
+  try {
+    const dormitoryId = req.params.dormitoryId;
+    const students = await studentService.getStudentsByDormitory(dormitoryId);
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getStudentsByRoom = async (req, res) => {
+  try {
+    const roomId = req.params.roomId;
+    const students = await studentService.getStudentsByRoom(roomId);
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
+  login,
   getAllStudents,
   getStudentById,
   createStudent,
   updateStudent,
   deleteStudent,
-  login,
+  getStudentsByDormitory,
+  getStudentsByRoom,
 };
