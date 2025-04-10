@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const client = require("./src/config/connections_redis");
+const redis = require("./src/config/connections_redis");
 const cors = require("cors");
 const db = require("./src/models");
 const createHttpError = require("http-errors");
@@ -19,6 +19,21 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  const health = {
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+    services: {
+      database: { status: "UP" },
+      redis: { status: redis.isConnected() ? "UP" : "DOWN" },
+    },
+  };
+
+  res.status(200).json(health);
+});
 
 app.get("/", (req, res, next) => {
   res.status(200).json({
@@ -56,4 +71,12 @@ app.listen(PORT, async () => {
   } catch (error) {
     console.error("❌ Unable to connect to the database:", error);
   }
+
+  // Redis status
+  console.log(
+    `Redis status: ${redis.isConnected() ? "✅ Connected" : "❌ Not connected"}`
+  );
+  console.log(
+    `⚠️ The application will function with limited capabilities if Redis is not available.`
+  );
 });

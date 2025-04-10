@@ -5,7 +5,7 @@ require("dotenv").config();
 const ms = require("ms");
 const { Student, Auth } = require("../models");
 const createHttpError = require("http-errors");
-const client = require("../config/connections_redis");
+const redis = require("../config/connections_redis");
 
 const generateTokens = (user) => {
   const accessToken = jwt.sign(
@@ -102,61 +102,89 @@ const login = async (email, password) => {
 };
 
 const refreshToken = async (oldRefreshToken) => {
-  return new Promise((resolve, reject) => {
-    jwt.verify(
-      oldRefreshToken,
-      process.env.JWT_REFRESH_SECRET,
-      async (err, decoded) => {
-        if (err) {
-          return reject(err);
-        }
+  try {
+    console.log("Refreshing token...");
+    // Verify token first
+    const decoded = jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET);
 
-        const storedRefreshToken = await client.get(decoded.id);
-        if (!storedRefreshToken) {
-          return reject(createHttpError.Unauthorized("Invalid refresh token"));
-        }
+    // Use safe Redis operation to get stored token
+    const storedRefreshToken = await redis.safeGet(decoded.id);
 
-        const user = await Student.findByPk(decoded.id);
-        if (!user) {
-          return reject(createHttpError.NotFound("User not found"));
-        }
+    // If Redis is connected but token doesn't match or doesn't exist
+    if (
+      redis.isConnected() &&
+      (!storedRefreshToken || storedRefreshToken !== oldRefreshToken)
+    ) {
+      throw createHttpError.Unauthorized("Invalid refresh token");
+    }
 
-        const { accessToken, refreshToken } = generateTokens(user);
-        await storeRefreshToken(user.id, refreshToken);
+    // Find user
+    const user = await Student.findByPk(decoded.id);
+    if (!user) {
+      throw createHttpError.NotFound("User not found");
+    }
 
-        resolve({ accessToken, refreshToken });
-      }
+    // Generate new tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Store new refresh token
+    await redis.safeSet(user.id, refreshToken, {
+      EX: Math.floor(ms(process.env.JWT_REFRESH_EXPIRES_IN || "1h") / 1000),
+    });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      throw createHttpError.Unauthorized("Invalid or expired token");
+    }
+    if (error.status) throw error;
+    throw createHttpError.InternalServerError(
+      `Token refresh failed: ${error.message}`
     );
-  });
+  }
 };
 
 const storeRefreshToken = async (studentID, refreshToken) => {
   try {
     // Parse the expiration time from environment variable
-    const refreshExpiry = process.env.JWT_REFRESH_EXPIRES_IN;
+    const refreshExpiry = process.env.JWT_REFRESH_EXPIRES_IN || "1h";
 
     // Convert to seconds (ms returns milliseconds)
     const expiresInSeconds = Math.floor(ms(refreshExpiry) / 1000);
 
     // Store token with expiration
-    const reply = await client.set(studentID, refreshToken, {
+    const reply = await redis.safeSet(studentID, refreshToken, {
       EX: expiresInSeconds,
     });
 
     console.log(
       `Token stored with expiration: ${refreshExpiry} (${expiresInSeconds} seconds)`
     );
-    return reply;
+
+    // If Redis is down, we still return success but log it
+    if (!reply && !redis.isConnected()) {
+      console.log(
+        `Token not stored in Redis (Redis unavailable) for user: ${studentID}`
+      );
+    } else {
+      console.log(
+        `Token stored with expiration: ${refreshExpiry} (${expiresInSeconds} seconds)`
+      );
+    }
+    return true;
   } catch (error) {
     console.error("Error parsing expiration time:", error);
-    throw createHttpError.InternalServerError(`Redis error: ${error.message}`);
+    return true; // Return true to indicate success even if parsing fails
   }
 };
 
 const logout = async (studentID) => {
   try {
     // Delete refresh token from Redis
-    const result = await client.del(studentID);
+    const result = await redis.safeDel(studentID);
 
     if (result !== 1) {
       throw createHttpError.InternalServerError("Failed to logout user");

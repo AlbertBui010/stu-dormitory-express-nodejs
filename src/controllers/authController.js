@@ -56,6 +56,12 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({
+        status: 400,
+        message: "Refresh token is required",
+      });
+    }
     const tokens = await authService.refreshToken(refreshToken);
     res.json(tokens);
   } catch (error) {
