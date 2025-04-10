@@ -37,7 +37,8 @@ app.get("/api/health", (req, res) => {
 
 app.get("/", (req, res, next) => {
   res.status(200).json({
-    message: "Welcome to the Dormitory Management System API",
+    message:
+      "Welcome to the Dormitory Management System API. Made by quybuiquang",
   });
 });
 
