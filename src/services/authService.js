@@ -9,7 +9,17 @@ const redis = require("../config/connections_redis");
 
 const generateTokens = (user) => {
   const accessToken = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      phone: user.phone,
+      gender: user.gender,
+      dob: user.dob,
+      major: user.major,
+      year: user.year,
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN }
   );
