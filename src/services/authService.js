@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const { STUDENT, DEFAULT } = require("../const/type");
 require("dotenv").config();
 const ms = require("ms");
-const { Student, Auth } = require("../models");
+const { Student } = require("../models");
 const createHttpError = require("http-errors");
 const redis = require("../config/connections_redis");
 
