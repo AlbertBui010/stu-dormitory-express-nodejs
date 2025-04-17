@@ -6,13 +6,8 @@ module.exports = (sequelize, DataTypes) => {
   class Payment extends Model {
     static associate(models) {
       // Define associations
-      Payment.belongsTo(models.Student, {
-        foreignKey: "student_id",
-        onDelete: "CASCADE",
-      });
-
-      Payment.belongsTo(models.Room, {
-        foreignKey: "room_id",
+      Payment.belongsTo(models.RoomAllocation, {
+        foreignKey: "room_allocation_id",
         onDelete: "CASCADE",
       });
     }
@@ -25,19 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      student_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        references: {
-          model: "Student",
-          key: "id",
-        },
-      },
-      room_id: {
+      room_allocation_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "Room",
+          model: "Room_Allocation",
           key: "id",
         },
       },

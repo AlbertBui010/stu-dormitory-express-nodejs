@@ -35,8 +35,7 @@ const generateTokens = (user) => {
 
 const register = async (studentData) => {
   try {
-    const { id, name, email, password, phone, gender, dob, major, year } =
-      studentData;
+    const { id, email, phone } = studentData;
 
     // Check if student already exists
     const existingStudent = await Student.findOne({
@@ -53,18 +52,10 @@ const register = async (studentData) => {
 
     // Create new student
     const student = await Student.create({
-      id,
-      name,
-      email,
+      ...studentData,
       role: STUDENT,
-      password,
-      phone,
-      gender,
-      dob,
-      major,
-      year,
-      status: STU_PENDING,
-      created_by: DEFAULT,
+      status: studentData.status || STU_PENDING,
+      created_by: studentData?.user?.id || DEFAULT,
     });
 
     // Generate tokens
@@ -74,7 +65,7 @@ const register = async (studentData) => {
     await storeRefreshToken(student.id, refreshToken);
 
     // Return success response
-    return [];
+    return student.id;
   } catch (error) {
     throw createHttpError.InternalServerError(
       "Registration failed: " + error.message

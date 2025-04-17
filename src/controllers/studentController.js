@@ -1,4 +1,6 @@
 const studentService = require("../services/studentService");
+const authService = require("../services/authService");
+const { studentRegisterValidate } = require("../utils/validation");
 
 const getAllStudents = async (req, res) => {
   try {
@@ -23,12 +25,12 @@ const getStudentById = async (req, res) => {
 
 const createStudent = async (req, res) => {
   try {
-    const studentData = {
-      ...req.body,
-      created_by: req.user.id,
-    };
-    const student = await studentService.createStudent(studentData);
-    res.status(201).json(student);
+    const { error } = studentRegisterValidate(req.body);
+    if (error) {
+      throw createError(error.details[0].message);
+    }
+    const studentId = await authService.register(req.body);
+    res.status(201).json({ id: studentId });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

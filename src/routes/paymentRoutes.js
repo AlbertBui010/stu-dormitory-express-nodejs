@@ -9,6 +9,7 @@ const {
   updatePayment,
   deletePayment,
   getPaymentsByStudent,
+  getPaymentByRoomAllocation,
 } = require("../controllers/paymentController");
 
 // Protected routes
@@ -20,5 +21,6 @@ router.post("/", createPayment);
 router.put("/:id", updatePayment);
 router.delete("/:id", deletePayment);
 router.get("/student/:studentId", getPaymentsByStudent);
+router.get("/room-allocation/:roomAllocationId", getPaymentByRoomAllocation);
 
 module.exports = router;

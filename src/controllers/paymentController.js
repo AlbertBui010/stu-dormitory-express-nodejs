@@ -24,9 +24,12 @@ const getPaymentById = async (req, res) => {
 const createPayment = async (req, res) => {
   try {
     const paymentData = {
-      ...req.body,
-      created_by: req.user.id,
+      room_allocation_id: req.body.room_allocation_id,
+      amount: req.body.amount,
       payment_date: req.body.payment_date || new Date(),
+      payment_status: req.body.payment_status,
+      payment_method: req.body.payment_method,
+      created_by: req.user.id,
     };
     const payment = await paymentService.createPayment(paymentData);
     res.status(201).json(payment);
@@ -80,6 +83,20 @@ const getPaymentsByStudent = async (req, res) => {
   }
 };
 
+const getPaymentByRoomAllocation = async (req, res) => {
+  try {
+    const roomAllocationId = req.params.roomAllocationId;
+    const payment = await paymentService.getPaymentByRoomAllocation(
+      roomAllocationId
+    );
+    res.json(payment);
+  } catch (error) {
+    res.status(error.status || 500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllPayments,
   getPaymentById,
@@ -87,4 +104,5 @@ module.exports = {
   updatePayment,
   deletePayment,
   getPaymentsByStudent,
+  getPaymentByRoomAllocation,
 };

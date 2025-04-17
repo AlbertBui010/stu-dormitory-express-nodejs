@@ -5,12 +5,20 @@ const getAllPayments = async () => {
   return await Payment.findAll({
     include: [
       {
-        model: Student,
-        attributes: ["id", "name", "email"],
-      },
-      {
-        model: Room,
-        attributes: ["id", "room_number"],
+        model: RoomAllocation,
+        as: "roomAllocation",
+        include: [
+          {
+            model: Student,
+            as: "student",
+            attributes: ["id", "name", "email"],
+          },
+          {
+            model: Room,
+            as: "room",
+            attributes: ["id", "room_number", "price"],
+          },
+        ],
       },
     ],
   });
@@ -20,12 +28,20 @@ const getPaymentById = async (id) => {
   const payment = await Payment.findByPk(id, {
     include: [
       {
-        model: Student,
-        attributes: ["id", "name", "email"],
-      },
-      {
-        model: Room,
-        attributes: ["id", "room_number"],
+        model: RoomAllocation,
+        as: "roomAllocation",
+        include: [
+          {
+            model: Student,
+            as: "student",
+            attributes: ["id", "name", "email"],
+          },
+          {
+            model: Room,
+            as: "room",
+            attributes: ["id", "room_number", "price"],
+          },
+        ],
       },
     ],
   });
@@ -38,17 +54,27 @@ const getPaymentById = async (id) => {
 };
 
 const createPayment = async (paymentData) => {
-  const { student_id, room_id } = paymentData;
+  const { room_allocation_id } = paymentData;
 
-  // Verify student and room exist
-  const student = await Student.findByPk(student_id);
-  if (!student) {
-    throw createHttpError.NotFound("Student not found");
+  const roomAllocation = await RoomAllocation.findByPk(room_allocation_id, {
+    include: [
+      { model: Student, as: "student" },
+      { model: Room, as: "room" },
+    ],
+  });
+
+  if (!roomAllocation) {
+    throw createHttpError.NotFound("Room allocation not found");
   }
 
-  const room = await Room.findByPk(room_id);
-  if (!room) {
-    throw createHttpError.NotFound("Room not found");
+  const existingPayment = await Payment.findOne({
+    where: { room_allocation_id },
+  });
+
+  if (existingPayment) {
+    throw createHttpError.Conflict(
+      "A payment for this room allocation already exists"
+    );
   }
 
   return await Payment.create(paymentData);
@@ -85,6 +111,38 @@ const getPaymentsByStudent = async (studentId) => {
   });
 };
 
+const getPaymentByRoomAllocation = async (roomAllocationId) => {
+  const payment = await Payment.findOne({
+    where: { room_allocation_id: roomAllocationId },
+    include: [
+      {
+        model: RoomAllocation,
+        as: "roomAllocation",
+        include: [
+          {
+            model: Student,
+            as: "student",
+            attributes: ["id", "name", "email"],
+          },
+          {
+            model: Room,
+            as: "room",
+            attributes: ["id", "room_number", "price"],
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!payment) {
+    throw createHttpError.NotFound(
+      "Payment not found for this room allocation"
+    );
+  }
+
+  return payment;
+};
+
 module.exports = {
   getAllPayments,
   getPaymentById,
@@ -92,4 +150,5 @@ module.exports = {
   updatePayment,
   deletePayment,
   getPaymentsByStudent,
+  getPaymentByRoomAllocation,
 };

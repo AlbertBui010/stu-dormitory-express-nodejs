@@ -1,4 +1,3 @@
-const { Utils } = require("sequelize");
 const authService = require("../services/authService");
 const {
   studentRegisterValidate,
