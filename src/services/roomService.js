@@ -44,6 +44,11 @@ const create = async (data) => {
       throw createHttpError(404, "Dormitory not found");
     }
 
+    // Validate price (example validation)
+    if (data.price && (isNaN(data.price) || data.price < 0)) {
+      throw createHttpError(400, "Price must be a positive number");
+    }
+
     // Check if room number already exists in the dormitory
     const existingRoom = await Room.findOne({
       where: {
@@ -58,6 +63,8 @@ const create = async (data) => {
         "Room number already exists in this dormitory"
       );
     }
+
+    console.log("DATA:", data);
 
     return await Room.create(data);
   } catch (error) {
@@ -88,6 +95,11 @@ const update = async (id, data) => {
           "Room number already exists in this dormitory"
         );
       }
+    }
+
+    // Validate price (example validation)
+    if (data.price && (isNaN(data.price) || data.price < 0)) {
+      throw createHttpError(400, "Price must be a positive number");
     }
 
     await Room.update(data, { where: { id } });

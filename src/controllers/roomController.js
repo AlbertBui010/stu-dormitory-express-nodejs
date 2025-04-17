@@ -1,4 +1,5 @@
 const roomService = require("../services/roomService");
+const { roomValidation } = require("../utils/validation");
 
 const getAllRooms = async (req, res) => {
   try {
@@ -24,6 +25,11 @@ const getRoomById = async (req, res) => {
 
 const createRoom = async (req, res) => {
   try {
+    const { error } = roomValidation(req.body);
+    if (error) {
+      return res.status(400).json(NewResponse(error.details[0].message, []));
+    }
+
     const roomData = {
       ...req.body,
       created_by: req.user.id,
@@ -41,6 +47,11 @@ const createRoom = async (req, res) => {
 
 const updateRoom = async (req, res) => {
   try {
+    const { error } = roomValidation(req.body);
+    if (error) {
+      return res.status(400).json(NewResponse(error.details[0].message, []));
+    }
+
     const roomData = {
       ...req.body,
       updated_by: req.user.id,

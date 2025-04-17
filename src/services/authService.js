@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
-const { STUDENT, DEFAULT } = require("../const/type");
+const { STUDENT, DEFAULT, STU_PENDING } = require("../const/type");
 require("dotenv").config();
 const ms = require("ms");
 const { Student } = require("../models");
@@ -63,6 +63,7 @@ const register = async (studentData) => {
       dob,
       major,
       year,
+      status: STU_PENDING,
       created_by: DEFAULT,
     });
 
@@ -73,15 +74,7 @@ const register = async (studentData) => {
     await storeRefreshToken(student.id, refreshToken);
 
     // Return success response
-    return {
-      accessToken,
-      refreshToken,
-      student: {
-        id: student.id,
-        name: student.name,
-        email: student.email,
-      },
-    };
+    return [];
   } catch (error) {
     throw createHttpError.InternalServerError(
       "Registration failed: " + error.message

@@ -53,9 +53,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      facility: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       status: {
         type: DataTypes.STRING(100),
         allowNull: false,
+      },
+      created_by: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      updated_by: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {

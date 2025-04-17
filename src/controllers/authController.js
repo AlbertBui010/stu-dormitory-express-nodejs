@@ -1,25 +1,22 @@
+const { Utils } = require("sequelize");
 const authService = require("../services/authService");
 const {
   studentRegisterValidate,
   studentLoginValidate,
 } = require("../utils/validation");
 const createError = require("http-errors");
+const { NewResponse, mess } = require("../utils/response");
 
 const register = async (req, res) => {
   try {
-    // Validate input
     const { error } = studentRegisterValidate(req.body);
     if (error) {
       throw createError(error.details[0].message);
     }
 
-    // Call service layer to handle registration
-    const result = await authService.register(req.body);
+    await authService.register(req.body);
 
-    res.status(201).json({
-      message: "Registration successful",
-      ...result,
-    });
+    res.status(201).json(NewResponse(mess.REGISTER_SUCCESS, []));
   } catch (error) {
     res.status(error.status || 500).json({
       error: error.message || "An error occurred during registration",
@@ -31,7 +28,7 @@ const login = async (req, res) => {
   try {
     const { error } = studentLoginValidate(req.body);
     if (error) {
-      throw createError(error.details[0].message);
+      return res.status(400).json(NewResponse(error.details[0].message, []));
     }
     const { email, password } = req.body;
     const { accessToken, refreshToken, user } = await authService.login(
@@ -39,7 +36,7 @@ const login = async (req, res) => {
       password
     );
 
-    res.json({
+    const dataResponse = {
       accessToken,
       refreshToken,
       user: {
@@ -53,9 +50,10 @@ const login = async (req, res) => {
         major: user.major,
         year: user.year,
       },
-    });
+    };
+    return res.status(200).json(NewResponse(mess.LOGIN_SUCCESS, dataResponse));
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    res.status(401).json(NewResponse(error.message, []));
   }
 };
 
