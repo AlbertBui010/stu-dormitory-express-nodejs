@@ -23,14 +23,16 @@ const getPaymentById = async (req, res) => {
 
 const createPayment = async (req, res) => {
   try {
+    const data = req.body;
     const paymentData = {
-      room_allocation_id: req.body.room_allocation_id,
-      amount: req.body.amount,
-      payment_date: req.body.payment_date || new Date(),
-      payment_status: req.body.payment_status,
-      payment_method: req.body.payment_method,
+      room_allocation_id: data.room_allocation_id,
+      amount: data.amount,
+      payment_date: data.payment_date || new Date(),
+      payment_status: data.payment_status,
+      payment_method: data.payment_method,
       created_by: req.user.id,
     };
+
     const payment = await paymentService.createPayment(paymentData);
     res.status(201).json(payment);
   } catch (error) {

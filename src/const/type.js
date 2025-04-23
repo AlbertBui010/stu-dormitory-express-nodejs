@@ -7,6 +7,9 @@ module.exports = {
   // Room types
   SIX_PEOPLE: "SIX_PEOPLE",
   TWELVE_PEOPLE: "TWELVE_PEOPLE",
+
+  R_STATUS_FULL: "FULL",
+  R_STATUS_AVAILABLE: "AVAILABLE",
   // Request status
 
   // Payment status
@@ -22,4 +25,8 @@ module.exports = {
   STU_ACTIVE: "STU_ACTIVE",
   STU_PENDING: "STU_PENDING",
   STU_INACTIVE: "STU_INACTIVE",
+
+  // Room Allocation Status
+  RA_STATUS_DANGKY: "DANGKY",
+  RA_STATUS_DANGO: "DANGO",
 };

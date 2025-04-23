@@ -7,11 +7,17 @@ const {
   createAllocation,
   updateAllocation,
   deleteAllocation,
+  getAllocationsByDormitory,
 } = require("../controllers/roomAllocationController");
 
 // Protected routes
-router.use(verifyToken, isAdmin);
+router.use(verifyToken);
 
+// Routes accessible to any authenticated user
+router.get("/student/:studentId", getAllocationById);
+router.get("/dormitory/:dormitoryId", getAllocationsByDormitory);
+
+router.use(isAdmin);
 router.get("/", getAllAllocations);
 router.get("/:id", getAllocationById);
 router.post("/", createAllocation);

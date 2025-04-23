@@ -72,10 +72,36 @@ const deleteAllocation = async (req, res) => {
   }
 };
 
+const getAllocationsByDormitory = async (req, res) => {
+  try {
+    const dormitoryId = req.params.dormitoryId;
+    const allocations = await roomAllocationService.getAllocationsByDormitory(
+      dormitoryId
+    );
+    res.json(allocations);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+const getAllocationsByStudent = async (req, res) => {
+  try {
+    const studentId = req.params.studentId;
+    const allocations = await roomAllocationService.getAllocationsByStudent(
+      studentId
+    );
+    res.json(allocations);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllAllocations,
   getAllocationById,
   createAllocation,
   updateAllocation,
   deleteAllocation,
+  getAllocationsByDormitory,
+  getAllocationsByStudent,
 };

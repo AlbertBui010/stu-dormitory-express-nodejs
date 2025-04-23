@@ -16,9 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       });
 
-      RoomAllocation.belongsTo(models.Room, {
-        foreignKey: "room_id",
-        onDelete: "CASCADE",
+      RoomAllocation.hasMany(models.Payment, {
+        foreignKey: "room_allocation_id",
+        as: "payments",
       });
     }
   }

@@ -37,7 +37,6 @@ const register = async (studentData) => {
   try {
     const { id, email, phone } = studentData;
 
-    // Check if student already exists
     const existingStudent = await Student.findOne({
       where: {
         [Op.or]: [{ id }, { email }, { phone }],

@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
   class Dormitory extends Model {
     static associate(models) {
       // Define associations here
+      Dormitory.hasMany(models.Room, {
+        foreignKey: "dormitory_id",
+      });
     }
   }
 

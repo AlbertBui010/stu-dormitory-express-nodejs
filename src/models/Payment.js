@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       Payment.belongsTo(models.RoomAllocation, {
         foreignKey: "room_allocation_id",
         onDelete: "CASCADE",
+        as: "roomAllocation",
       });
     }
   }
