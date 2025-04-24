@@ -10,9 +10,19 @@ module.exports = {
 
   R_STATUS_FULL: "FULL",
   R_STATUS_AVAILABLE: "AVAILABLE",
+  R_STATUS_MAINTENANCE: "MAINTENANCE",
   // Request status
 
-  // Payment status
+  // Payment Status
+  PAYMENT_STATUS_PAID: "PAID",
+  PAYMENT_STATUS_UNPAID: "UNPAID",
+  PAYMENT_STATUS_OVERDUE: "OVERDUE",
+  PAYMENT_STATUS_CANCELLED: "CANCELLED",
+
+  // Payment Method
+  PAYMENT_METHOD_CASH: "CASH",
+  PAYMENT_METHOD_TRANSFER: "TRANSFER",
+  PAYMENT_METHOD_CARD: "CARD",
 
   // Notification types
 
@@ -29,4 +39,6 @@ module.exports = {
   // Room Allocation Status
   RA_STATUS_DANGKY: "DANGKY",
   RA_STATUS_DANGO: "DANGO",
+  RA_STATUS_DAHUY: "DAHUY",
+  RA_STATUS_KETTHUC: "KETTHUC",
 };

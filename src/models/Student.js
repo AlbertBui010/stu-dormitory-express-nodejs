@@ -13,9 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       Student.hasMany(models.RoomAllocation, {
         foreignKey: "student_id",
       });
-      Student.hasMany(models.Payment, {
-        foreignKey: "student_id",
-      });
     }
   }
 

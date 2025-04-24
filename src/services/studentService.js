@@ -9,13 +9,55 @@ const {
 const getAllStudents = async () => {
   return await Student.findAll({
     attributes: { exclude: ["password"] },
+    include: [
+      {
+        model: RoomAllocation,
+        required: false,
+        include: [
+          {
+            model: Room,
+            attributes: ["id", "room_number", "room_type", "price", "facility"],
+            include: [
+              {
+                model: Dormitory,
+                attributes: ["id", "name", "address"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
 };
 
 const getStudentById = async (id) => {
-  return await Student.findByPk(id, {
+  const student = await Student.findByPk(id, {
     attributes: { exclude: ["password"] },
+    include: [
+      {
+        model: RoomAllocation,
+        required: false,
+        include: [
+          {
+            model: Room,
+            attributes: ["id", "room_number", "room_type", "price", "facility"],
+            include: [
+              {
+                model: Dormitory,
+                attributes: ["id", "name", "address"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
+
+  if (!student) {
+    throw createHttpError.NotFound("Student not found");
+  }
+
+  return student;
 };
 
 const createStudent = async (studentData) => {

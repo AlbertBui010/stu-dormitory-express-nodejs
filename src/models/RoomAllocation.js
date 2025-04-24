@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
 
       RoomAllocation.hasMany(models.Payment, {
         foreignKey: "room_allocation_id",
-        as: "payments",
+        as: "payment",
       });
     }
   }

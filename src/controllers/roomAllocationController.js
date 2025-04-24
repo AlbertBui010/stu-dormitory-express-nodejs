@@ -29,9 +29,12 @@ const createAllocation = async (req, res) => {
       ...req.body,
       created_by: req.user.id,
     };
+    console.log(" createAllocation ~ allocationData:", allocationData);
+
     const allocation = await roomAllocationService.createAllocation(
       allocationData
     );
+
     res.status(201).json(allocation);
   } catch (error) {
     if (error.status === 400 || error.status === 404) {
